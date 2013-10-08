@@ -1,0 +1,8 @@
+target/
+.settings/
+.project
+.classpath
+java.hprof*.txt
+.log
+.checkstyle
+*.orig
