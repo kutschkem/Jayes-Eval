@@ -24,6 +24,7 @@ import org.codehaus.plexus.DefaultPlexusContainer;
 import org.codehaus.plexus.PlexusContainerException;
 import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
 import org.eclipse.recommenders.commons.bayesnet.BayesianNetwork;
+import org.eclipse.recommenders.internal.jayes.io.util.BayesNetConverter;
 import org.eclipse.recommenders.jayes.BayesNet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
