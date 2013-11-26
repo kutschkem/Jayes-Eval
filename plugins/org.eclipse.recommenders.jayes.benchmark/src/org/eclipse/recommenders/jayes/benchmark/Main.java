@@ -12,7 +12,7 @@ public class Main {
 
     private static final int WARMUP_ITERATIONS = 15;
     private static final int REPETITIONS = 20;
-    private static final String MODEL = "jre:jre:zip:call:1.0.0";// "org.eclipse.jface:org.eclipse.jface:zip:call:3.0.0";
+    private static final String MODEL = "org.eclipse.jface:org.eclipse.jface:zip:call:3.0.0";
 
     public static void main(String[] args) throws InvalidCommandException, InvalidBenchmarkException,
             InvalidConfigurationException {

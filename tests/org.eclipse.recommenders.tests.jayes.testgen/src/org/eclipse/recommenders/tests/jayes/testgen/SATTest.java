@@ -25,7 +25,7 @@ import org.eclipse.recommenders.jayes.testgen.sat.HornClause;
 import org.eclipse.recommenders.jayes.testgen.sat.HornSAT;
 import org.eclipse.recommenders.jayes.testgen.sat.Learner;
 import org.eclipse.recommenders.jayes.util.Pair;
-import org.eclipse.recommenders.tests.jayes.util.ArrayUtils;
+import org.eclipse.recommenders.tests.jayes.ArrayUtils;
 import org.junit.Test;
 
 public class SATTest {

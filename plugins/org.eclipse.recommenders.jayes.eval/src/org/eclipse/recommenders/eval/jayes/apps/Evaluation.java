@@ -40,15 +40,14 @@ import org.eclipse.recommenders.eval.jayes.util.RecommenderModelLoader;
 import org.eclipse.recommenders.jayes.BayesNet;
 import org.eclipse.recommenders.jayes.BayesNode;
 import org.eclipse.recommenders.jayes.inference.IBayesInferer;
-import org.eclipse.recommenders.jayes.io.XDSLReader;
-import org.eclipse.recommenders.jayes.io.XMLBIFReader;
+import org.eclipse.recommenders.jayes.io.xdsl.XDSLReader;
+import org.eclipse.recommenders.jayes.io.xmlbif.XMLBIFReader;
 import org.eclipse.recommenders.jayes.testgen.scenario.impl.SampledScenarioGenerator;
 import org.eclipse.recommenders.jayes.util.NumericalInstabilityException;
 import org.eclipse.recommenders.utils.gson.GsonUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonatype.aether.RepositorySystem;
-import org.sonatype.aether.connector.wagon.WagonProvider;
 import org.sonatype.aether.connector.wagon.WagonRepositoryConnectorFactory;
 import org.sonatype.aether.repository.LocalRepository;
 import org.sonatype.aether.repository.RemoteRepository;
@@ -105,7 +104,7 @@ public class Evaluation implements IApplication {
 
         BayesNet net = loadModel();
 
-        //warmup vm
+        // warmup vm
         for (int i = 0; i < 40; i++) {
             dataGen.setNetwork(net);
         }
@@ -139,11 +138,11 @@ public class Evaluation implements IApplication {
         if (model.endsWith(".data")) {
             return RecommenderModelLoader.load(str);
         } else if (model.endsWith(".xdsl")) {
-            XDSLReader xdslReader = new XDSLReader();
+            XDSLReader xdslReader = new XDSLReader(str);
             xdslReader.setLegacyMode(true);
-            return xdslReader.read(str);
+            return xdslReader.read();
         } else if (model.endsWith(".xml")) {
-            return new XMLBIFReader().read(str);
+            return new XMLBIFReader(str).read();
         } else {
             throw new IllegalArgumentException("File name does not correspond to a supported data format");
         }
@@ -151,17 +150,17 @@ public class Evaluation implements IApplication {
 
     private File resolveMavenArtifact() throws ArtifactResolutionException, IOException {
         DefaultServiceLocator locator = new DefaultServiceLocator();
-//        locator.addService(WagonProvider.class, ManualWagonProvider.class);
+        // locator.addService(WagonProvider.class, ManualWagonProvider.class);
         locator.addService(RepositoryConnectorFactory.class, WagonRepositoryConnectorFactory.class);
 
         RepositorySystem reposys = locator.getService(RepositorySystem.class);
 
-        //setup session
+        // setup session
         DefaultRepositorySystemSession session = new MavenRepositorySystemSession();
         LocalRepository localRepo = new LocalRepository("target/local-repo");
         session.setLocalRepositoryManager(reposys.newLocalRepositoryManager(localRepo));
 
-        //resolve artifact
+        // resolve artifact
         DefaultArtifact artifact = new DefaultArtifact(modelArtifact);
         RemoteRepository remote = new RemoteRepository(modelRepoId, "default", modelRepo);
 

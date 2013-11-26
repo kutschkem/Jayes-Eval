@@ -13,8 +13,10 @@ package org.eclipse.recommenders.jayes.benchmark;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
@@ -26,15 +28,18 @@ import org.eclipse.recommenders.jayes.BayesNet;
 import org.eclipse.recommenders.jayes.benchmark.util.ModelLoader;
 import org.eclipse.recommenders.jayes.inference.junctionTree.JunctionTreeAlgorithm;
 import org.eclipse.recommenders.jayes.inference.junctionTree.JunctionTreeBuilder;
-import org.eclipse.recommenders.jayes.io.BinaryReader;
-import org.eclipse.recommenders.jayes.io.BinaryWriter;
+import org.eclipse.recommenders.jayes.io.jbif.JayesBifReader;
+import org.eclipse.recommenders.jayes.io.jbif.JayesBifWriter;
 import org.eclipse.recommenders.jayes.util.triangulation.MinDegree;
 
 import com.google.caliper.Benchmark;
 
+@SuppressWarnings("deprecation")
 public class IOBenchmarkBinary extends Benchmark {
     private List<byte[]> networks_java;
     private List<byte[]> jayesNets_bin;
+
+    private static final boolean COMPRESS = false;
 
     public IOBenchmarkBinary(String modelCoordinate) throws Exception {
         ModelLoader modelLoader = new ModelLoader(modelCoordinate);
@@ -57,12 +62,20 @@ public class IOBenchmarkBinary extends Benchmark {
         List<byte[]> serialized = new ArrayList<byte[]>();
         for (BayesNet network : jayesNetworks) {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
-            BinaryWriter wrtr = new BinaryWriter(new GZIPOutputStream(out));
+            JayesBifWriter wrtr = new JayesBifWriter(compress(out));
             wrtr.write(network);
             wrtr.close();
             serialized.add(out.toByteArray());
         }
         return serialized;
+    }
+
+    private OutputStream compress(ByteArrayOutputStream out) throws IOException {
+        if (COMPRESS) {
+            return new GZIPOutputStream(out);
+        } else {
+            return out;
+        }
     }
 
     private List<byte[]> serializeJava(List<BayesianNetwork> intermediateNetworks) throws IOException {
@@ -107,8 +120,9 @@ public class IOBenchmarkBinary extends Benchmark {
         List<Integer> l = new ArrayList<Integer>();
         for (int i = 0; i < rep; i++) {
             for (byte[] serialized : jayesNets_bin) {
-                BinaryReader rdr = new BinaryReader(new GZIPInputStream(new ByteArrayInputStream(serialized)));
+                JayesBifReader rdr = new JayesBifReader(toCompressedInputStream(serialized));
                 BayesNet net = rdr.read();
+                rdr.close();
                 JunctionTreeAlgorithm algo = new JunctionTreeAlgorithm();
                 algo.setNetwork(net);
                 l.add(algo.hashCode());
@@ -117,12 +131,20 @@ public class IOBenchmarkBinary extends Benchmark {
         return l;
     }
 
+    private InputStream toCompressedInputStream(byte[] serialized) throws IOException {
+        if (COMPRESS) {
+            return new GZIPInputStream(new ByteArrayInputStream(serialized));
+        } else {
+            return new ByteArrayInputStream(serialized);
+        }
+    }
+
     public List<Integer> timeBinaryDeserializationWithMinDegreeToJTA(int rep) throws IOException,
             ClassNotFoundException {
         List<Integer> l = new ArrayList<Integer>();
         for (int i = 0; i < rep; i++) {
             for (byte[] serialized : jayesNets_bin) {
-                BinaryReader rdr = new BinaryReader(new GZIPInputStream(new ByteArrayInputStream(serialized)));
+                JayesBifReader rdr = new JayesBifReader(toCompressedInputStream(serialized));
                 BayesNet net = rdr.read();
                 rdr.close();
                 JunctionTreeAlgorithm algo = new JunctionTreeAlgorithm();
@@ -148,7 +170,6 @@ public class IOBenchmarkBinary extends Benchmark {
 
     public List<Integer> timeJavaDeserializationToBayesianNetwork(int rep) throws IOException, ClassNotFoundException {
         List<Integer> l = new ArrayList<Integer>();
-        BayesNetConverter converter = new BayesNetConverter();
         for (int i = 0; i < rep; i++) {
             for (byte[] serialized : networks_java) {
                 BayesianNetwork net = readNetwork(serialized);
@@ -162,7 +183,7 @@ public class IOBenchmarkBinary extends Benchmark {
         List<Integer> l = new ArrayList<Integer>();
         for (int i = 0; i < rep; i++) {
             for (byte[] serialized : jayesNets_bin) {
-                BinaryReader rdr = new BinaryReader(new GZIPInputStream(new ByteArrayInputStream(serialized)));
+                JayesBifReader rdr = new JayesBifReader(toCompressedInputStream(serialized));
                 BayesNet net = rdr.read();
                 rdr.close();
                 l.add(net.hashCode());
@@ -172,8 +193,7 @@ public class IOBenchmarkBinary extends Benchmark {
     }
 
     private BayesianNetwork readNetwork(byte[] serialized) throws IOException, ClassNotFoundException {
-        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(serialized);
-        ObjectInputStream objectInputStream = new ObjectInputStream(new GZIPInputStream(byteArrayInputStream));
+        ObjectInputStream objectInputStream = new ObjectInputStream(toCompressedInputStream(serialized));
         BayesianNetwork net = (BayesianNetwork) objectInputStream.readObject();
         objectInputStream.close();
         return net;
@@ -181,7 +201,7 @@ public class IOBenchmarkBinary extends Benchmark {
 
     private byte[] writeNetwork(BayesianNetwork network) throws IOException {
         ByteArrayOutputStream byteArrayStream = new ByteArrayOutputStream();
-        ObjectOutputStream objectStream = new ObjectOutputStream(new GZIPOutputStream(byteArrayStream));
+        ObjectOutputStream objectStream = new ObjectOutputStream(compress(byteArrayStream));
         objectStream.writeObject(network);
         objectStream.close();
         byte[] serialized = byteArrayStream.toByteArray();

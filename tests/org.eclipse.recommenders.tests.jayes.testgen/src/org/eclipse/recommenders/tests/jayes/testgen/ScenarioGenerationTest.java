@@ -12,7 +12,7 @@ import java.util.Map;
 import org.eclipse.recommenders.jayes.BayesNet;
 import org.eclipse.recommenders.jayes.BayesNode;
 import org.eclipse.recommenders.jayes.testgen.scenario.impl.SampledScenarioGenerator;
-import org.eclipse.recommenders.tests.jayes.util.NetExamples;
+import org.eclipse.recommenders.tests.jayes.NetExamples;
 import org.junit.Test;
 
 public class ScenarioGenerationTest {

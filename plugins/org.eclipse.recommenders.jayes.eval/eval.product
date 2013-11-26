@@ -58,10 +58,8 @@
       <plugin id="org.eclipse.recommenders.jayes"/>
       <plugin id="org.eclipse.recommenders.jayes.eval"/>
       <plugin id="org.eclipse.recommenders.jayes.io"/>
-      <plugin id="org.eclipse.recommenders.jayes.serialization"/>
       <plugin id="org.eclipse.recommenders.jayes.testgen"/>
       <plugin id="org.eclipse.recommenders.jayes.transformation"/>
-      <plugin id="org.eclipse.recommenders.rdk"/>
       <plugin id="org.eclipse.recommenders.utils"/>
       <plugin id="org.eclipse.xtend.lib"/>
       <plugin id="org.eclipse.xtext.xbase.lib"/>

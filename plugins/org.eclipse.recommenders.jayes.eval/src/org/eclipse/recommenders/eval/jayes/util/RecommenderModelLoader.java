@@ -11,8 +11,10 @@
 package org.eclipse.recommenders.eval.jayes.util;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -21,7 +23,7 @@ import org.eclipse.recommenders.commons.bayesnet.BayesianNetwork;
 import org.eclipse.recommenders.commons.bayesnet.Node;
 import org.eclipse.recommenders.jayes.BayesNet;
 import org.eclipse.recommenders.jayes.BayesNode;
-import org.eclipse.recommenders.jayes.io.XMLBIFWriter;
+import org.eclipse.recommenders.jayes.io.xmlbif.XMLBIFWriter;
 
 public class RecommenderModelLoader {
 
@@ -35,8 +37,9 @@ public class RecommenderModelLoader {
     public static void main(String[] args) throws FileNotFoundException, Exception {
         String model = args[0];
 
-        XMLBIFWriter writer = new XMLBIFWriter();
-        writer.writeToFile(load(model), args[1]);
+        XMLBIFWriter writer = new XMLBIFWriter(new BufferedOutputStream(new FileOutputStream(args[1])));
+        writer.write(load(model));
+        writer.close();
 
     }
 
@@ -62,7 +65,7 @@ public class RecommenderModelLoader {
 
     }
 
-    //uses the Jayes 1.0.0 API on purpose
+    // uses the Jayes 1.0.0 API on purpose
     @SuppressWarnings("deprecation")
     private void initializeNodes(final BayesianNetwork network) {
         final Collection<Node> nodes = network.getNodes();

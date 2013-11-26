@@ -43,15 +43,15 @@ public class ModelLoader {
 
     private static final String REMOTE_MODEL_REPO = "http://download.eclipse.org/recommenders/models/juno/";
 
-    private List<BayesianNetwork> networks;
-    private List<BayesNet> jayesNets;
+    private final List<BayesianNetwork> networks;
+    private final List<BayesNet> jayesNets;
     private static final Logger logger = LoggerFactory.getLogger(ModelLoader.class);
 
     public ModelLoader(String modelArtifact) throws ArtifactResolutionException, ClassNotFoundException,
             ComponentLookupException, PlexusContainerException, IOException {
         networks = loadModels(modelArtifact);
         logger.info("successfully loaded " + networks.size() + " models");
-        jayesNets = Lists.transform(networks, new BayesNetConverter());
+        jayesNets = Lists.transform(networks, BayesNetConverter.asFunction());
     }
 
     private List<BayesianNetwork> loadModels(String modelArtifact) throws ComponentLookupException,

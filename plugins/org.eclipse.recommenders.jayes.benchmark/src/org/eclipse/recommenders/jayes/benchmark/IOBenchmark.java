@@ -22,13 +22,14 @@ import org.eclipse.recommenders.commons.bayesnet.BayesianNetwork;
 import org.eclipse.recommenders.internal.jayes.io.util.BayesNetConverter;
 import org.eclipse.recommenders.jayes.BayesNet;
 import org.eclipse.recommenders.jayes.benchmark.util.ModelLoader;
-import org.eclipse.recommenders.jayes.io.XDSLReader;
-import org.eclipse.recommenders.jayes.io.XDSLWriter;
-import org.eclipse.recommenders.jayes.io.XMLBIFReader;
-import org.eclipse.recommenders.jayes.io.XMLBIFWriter;
+import org.eclipse.recommenders.jayes.io.xdsl.XDSLReader;
+import org.eclipse.recommenders.jayes.io.xdsl.XDSLWriter;
+import org.eclipse.recommenders.jayes.io.xmlbif.XMLBIFReader;
+import org.eclipse.recommenders.jayes.io.xmlbif.XMLBIFWriter;
 
 import com.google.caliper.Benchmark;
 
+@SuppressWarnings("deprecation")
 public class IOBenchmark extends Benchmark {
     private List<BayesianNetwork> networks;
     private List<BayesNet> jayesNets;
@@ -73,9 +74,13 @@ public class IOBenchmark extends Benchmark {
         List<BayesNet> dummy = new ArrayList<BayesNet>();
         for (int i = 0; i < repetitions; i++) {
             for (BayesNet net : jayesNets) {
-                XDSLWriter wrt = new XDSLWriter();
-                XDSLReader rdr = new XDSLReader();
-                dummy.add(rdr.readFromString(wrt.write(net)));
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                XDSLWriter wrt = new XDSLWriter(out);
+                wrt.write(net);
+                wrt.close();
+                XDSLReader rdr = new XDSLReader(new ByteArrayInputStream(out.toByteArray()));
+                dummy.add(rdr.read());
+                rdr.close();
             }
         }
         return dummy;
@@ -85,9 +90,13 @@ public class IOBenchmark extends Benchmark {
         List<BayesNet> dummy = new ArrayList<BayesNet>();
         for (int i = 0; i < repetitions; i++) {
             for (BayesNet net : jayesNets) {
-                XMLBIFWriter wrt = new XMLBIFWriter();
-                XMLBIFReader rdr = new XMLBIFReader();
-                dummy.add(rdr.readFromString(wrt.write(net)));
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                XMLBIFWriter wrt = new XMLBIFWriter(out);
+                wrt.write(net);
+                wrt.close();
+                XMLBIFReader rdr = new XMLBIFReader(new ByteArrayInputStream(out.toByteArray()));
+                dummy.add(rdr.read());
+                rdr.close();
             }
         }
         return dummy;
