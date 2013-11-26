@@ -27,8 +27,8 @@ import org.eclipse.recommenders.jayes.BayesNet;
 import org.eclipse.recommenders.jayes.BayesNode;
 import org.eclipse.recommenders.jayes.inference.IBayesInferer;
 import org.eclipse.recommenders.jayes.inference.junctionTree.JunctionTreeAlgorithm;
-import org.eclipse.recommenders.jayes.io.XDSLReader;
-import org.eclipse.recommenders.jayes.io.XMLBIFReader;
+import org.eclipse.recommenders.jayes.io.xdsl.XDSLReader;
+import org.eclipse.recommenders.jayes.io.xmlbif.XMLBIFReader;
 import org.eclipse.recommenders.jayes.testgen.TestCase;
 import org.eclipse.recommenders.jayes.testgen.TestcaseSerializer;
 import org.eclipse.recommenders.jayes.testgen.scenario.impl.SampledScenarioGenerator;
@@ -97,10 +97,20 @@ public class TestGen {
     private static BayesNet deserializeNet(String modelFile) throws ParserConfigurationException, SAXException,
             IOException {
         if (modelFile.matches(".*\\.xml")) {
-            return new XMLBIFReader().read(TestGen.class.getClassLoader().getResourceAsStream(modelFile));
+            XMLBIFReader xmlbifReader = new XMLBIFReader(TestGen.class.getClassLoader().getResourceAsStream(modelFile));
+            try {
+                return xmlbifReader.read();
+            } finally {
+                xmlbifReader.close();
+            }
         }
         if (modelFile.matches(".*\\.xdsl")) {
-            return new XDSLReader().read(TestGen.class.getClassLoader().getResourceAsStream(modelFile));
+            XDSLReader xdslReader = new XDSLReader(TestGen.class.getClassLoader().getResourceAsStream(modelFile));
+            try {
+                return xdslReader.read();
+            } finally {
+                xdslReader.close();
+            }
         }
         throw new IllegalArgumentException("unrecognized file format");
     }
