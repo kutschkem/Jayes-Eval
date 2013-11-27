@@ -41,6 +41,10 @@ public class IOBenchmarkBinary extends Benchmark {
 
     private static final boolean COMPRESS = false;
 
+    public IOBenchmarkBinary() throws Exception {
+        this("jre:jre:zip:call:1.0.0");
+    }
+
     public IOBenchmarkBinary(String modelCoordinate) throws Exception {
         ModelLoader modelLoader = new ModelLoader(modelCoordinate);
         this.networks_java = serializeJava(modelLoader.getIntermediateNetworks());
