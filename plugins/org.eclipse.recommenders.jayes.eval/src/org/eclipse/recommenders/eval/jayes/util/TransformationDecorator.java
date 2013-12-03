@@ -16,7 +16,7 @@ import java.util.Map;
 
 import org.eclipse.recommenders.jayes.BayesNet;
 import org.eclipse.recommenders.jayes.BayesNode;
-import org.eclipse.recommenders.jayes.inference.IBayesInferer;
+import org.eclipse.recommenders.jayes.inference.IBayesInferrer;
 import org.eclipse.recommenders.jayes.transformation.IDecompositionStrategy;
 import org.eclipse.recommenders.jayes.transformation.util.DecompositionFailedException;
 
@@ -24,12 +24,12 @@ import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
-public class TransformationDecorator implements IBayesInferer {
+public class TransformationDecorator implements IBayesInferrer {
 
     public static final String DELEGATE = "delegate";
     public static final String DECOMPOSED_NODES = "decomposedNodes";
 
-    private IBayesInferer delegate;
+    private IBayesInferrer delegate;
     private IDecompositionStrategy decomp;
     private List<String> names;
 
@@ -39,7 +39,7 @@ public class TransformationDecorator implements IBayesInferer {
     }
 
     @Inject
-    public TransformationDecorator(@Named(DELEGATE) IBayesInferer delegate, IDecompositionStrategy decompositionStrat) {
+    public TransformationDecorator(@Named(DELEGATE) IBayesInferrer delegate, IDecompositionStrategy decompositionStrat) {
         this.delegate = delegate;
         this.decomp = decompositionStrat;
     }

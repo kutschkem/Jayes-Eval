@@ -15,7 +15,7 @@ import static org.eclipse.recommenders.eval.jayes.util.TransformationDecorator.D
 
 import org.eclipse.recommenders.eval.jayes.util.JTATestAdapter;
 import org.eclipse.recommenders.eval.jayes.util.TransformationDecorator;
-import org.eclipse.recommenders.jayes.inference.IBayesInferer;
+import org.eclipse.recommenders.jayes.inference.IBayesInferrer;
 import org.eclipse.recommenders.jayes.transformation.IDecompositionStrategy;
 import org.eclipse.recommenders.jayes.transformation.SmoothedFactorDecomposition;
 
@@ -27,8 +27,8 @@ public class JayesTransformedModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        bind(IBayesInferer.class).to(TransformationDecorator.class);
-        bind(IBayesInferer.class).annotatedWith(Names.named(DELEGATE)).to(JTATestAdapter.class);
+        bind(IBayesInferrer.class).to(TransformationDecorator.class);
+        bind(IBayesInferrer.class).annotatedWith(Names.named(DELEGATE)).to(JTATestAdapter.class);
         bind(JTATestAdapter.class).in(Scopes.SINGLETON);
         bind(String.class).annotatedWith(Names.named(SPECIFIER)).toInstance("JayesTransform");
         bind(IDecompositionStrategy.class).to(SmoothedFactorDecomposition.class);

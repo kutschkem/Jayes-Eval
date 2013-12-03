@@ -19,14 +19,14 @@ import java.util.Map.Entry;
 
 import org.eclipse.recommenders.jayes.BayesNet;
 import org.eclipse.recommenders.jayes.BayesNode;
-import org.eclipse.recommenders.jayes.inference.IBayesInferer;
+import org.eclipse.recommenders.jayes.inference.IBayesInferrer;
 import org.eclipse.recommenders.jayes.util.NumericalInstabilityException;
 
 public class DataPointGenerator {
 
-    private Map<IBayesInferer, String> libMap = new HashMap<IBayesInferer, String>();
-    private List<IBayesInferer> inferrers = new ArrayList<IBayesInferer>();
-    private Map<IBayesInferer, Long> setupTimes = new HashMap<IBayesInferer, Long>();
+    private Map<IBayesInferrer, String> libMap = new HashMap<IBayesInferrer, String>();
+    private List<IBayesInferrer> inferrers = new ArrayList<IBayesInferrer>();
+    private Map<IBayesInferrer, Long> setupTimes = new HashMap<IBayesInferrer, Long>();
 
     private BayesNet net;
 
@@ -49,7 +49,7 @@ public class DataPointGenerator {
         for (int i = 0; i < number; i++) {
 
             for (int j = 0; j < inferrers.size(); j++) {
-                IBayesInferer infer = inferrers.get(j);
+                IBayesInferrer infer = inferrers.get(j);
                 // measure ---------------
                 // evidence setting + belief update + querying all variables
                 // once
@@ -113,14 +113,14 @@ public class DataPointGenerator {
         return mse;
     }
 
-    public void addInferrer(String lib, IBayesInferer inferrer) {
+    public void addInferrer(String lib, IBayesInferrer inferrer) {
         inferrers.add(inferrer);
         libMap.put(inferrer, lib);
     }
 
     public void setNetwork(BayesNet net) {
         this.net = net;
-        for (IBayesInferer inferrer : inferrers) {
+        for (IBayesInferrer inferrer : inferrers) {
             long time = System.nanoTime();
             inferrer.setNetwork(net);
             setupTimes.put(inferrer, System.nanoTime() - time);

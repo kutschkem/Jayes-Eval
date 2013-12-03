@@ -39,7 +39,7 @@ import org.eclipse.recommenders.eval.jayes.util.GuiceUtil;
 import org.eclipse.recommenders.eval.jayes.util.RecommenderModelLoader;
 import org.eclipse.recommenders.jayes.BayesNet;
 import org.eclipse.recommenders.jayes.BayesNode;
-import org.eclipse.recommenders.jayes.inference.IBayesInferer;
+import org.eclipse.recommenders.jayes.inference.IBayesInferrer;
 import org.eclipse.recommenders.jayes.io.xdsl.XDSLReader;
 import org.eclipse.recommenders.jayes.io.xmlbif.XMLBIFReader;
 import org.eclipse.recommenders.jayes.testgen.scenario.impl.SampledScenarioGenerator;
@@ -74,7 +74,7 @@ public class Evaluation implements IApplication {
     private static final long seed = 1337 + 42;
     private static Logger logger = LoggerFactory.getLogger(Evaluation.class);
 
-    private Map<String, IBayesInferer> inferrer = new HashMap<String, IBayesInferer>();
+    private Map<String, IBayesInferrer> inferrer = new HashMap<String, IBayesInferrer>();
     private List<IStatisticsProvider> statisticsProvider = newArrayList();
     private double observationProb;
     private String model;
@@ -89,7 +89,7 @@ public class Evaluation implements IApplication {
         for (Module module : guiceModules) {
             Injector jayes = Guice.createInjector(module);
             inferrer.put(jayes.getInstance(Key.get(String.class, Names.named("specifier"))),
-                    jayes.getInstance(IBayesInferer.class));
+                    jayes.getInstance(IBayesInferrer.class));
             statisticsProvider.add(jayes.getInstance(IStatisticsProvider.class));
         }
     }
@@ -98,7 +98,7 @@ public class Evaluation implements IApplication {
     public void runEvaluation() throws Exception {
         DataPointGenerator dataGen = new DataPointGenerator();
 
-        for (Entry<String, IBayesInferer> inferenceEntry : inferrer.entrySet()) {
+        for (Entry<String, IBayesInferrer> inferenceEntry : inferrer.entrySet()) {
             dataGen.addInferrer(inferenceEntry.getKey(), inferenceEntry.getValue());
         }
 
@@ -139,7 +139,6 @@ public class Evaluation implements IApplication {
             return RecommenderModelLoader.load(str);
         } else if (model.endsWith(".xdsl")) {
             XDSLReader xdslReader = new XDSLReader(str);
-            xdslReader.setLegacyMode(true);
             return xdslReader.read();
         } else if (model.endsWith(".xml")) {
             return new XMLBIFReader(str).read();

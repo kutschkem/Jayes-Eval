@@ -26,7 +26,7 @@ import org.eclipse.recommenders.eval.jayes.util.CLIUtil;
 import org.eclipse.recommenders.eval.jayes.util.GuiceUtil;
 import org.eclipse.recommenders.jayes.BayesNet;
 import org.eclipse.recommenders.jayes.BayesNode;
-import org.eclipse.recommenders.jayes.inference.IBayesInferer;
+import org.eclipse.recommenders.jayes.inference.IBayesInferrer;
 import org.eclipse.recommenders.jayes.inference.junctionTree.JunctionTreeAlgorithm;
 import org.eclipse.recommenders.jayes.inference.junctionTree.JunctionTreeBuilder;
 import org.eclipse.recommenders.jayes.testgen.scenario.impl.SampledScenarioGenerator;
@@ -46,8 +46,8 @@ public class StabilityBenchmark implements IApplication {
 
     private Logger logger = LoggerFactory.getLogger(StabilityBenchmark.class);
     private List<Module> guiceModules = new ArrayList<Module>();
-    private Map<String, IBayesInferer> inferrers = new HashMap<String, IBayesInferer>();
-    private Map<IBayesInferer, Double> results = new HashMap<IBayesInferer, Double>();
+    private Map<String, IBayesInferrer> inferrers = new HashMap<String, IBayesInferrer>();
+    private Map<IBayesInferrer, Double> results = new HashMap<IBayesInferrer, Double>();
 
     private BayesNet buildSimpleTreeNetwork(int leaves, double minProb) {
         BayesNet net = new BayesNet();
@@ -67,7 +67,7 @@ public class StabilityBenchmark implements IApplication {
         for (Module module : guiceModules) {
             Injector jayes = Guice.createInjector(module);
             inferrers.put(jayes.getInstance(Key.get(String.class, Names.named("specifier"))),
-                    jayes.getInstance(IBayesInferer.class));
+                    jayes.getInstance(IBayesInferrer.class));
         }
     }
 
@@ -103,7 +103,7 @@ public class StabilityBenchmark implements IApplication {
         }
     }
 
-    private void provokeNumericalInstability(IBayesInferer inferrer, double minProb, int maxLeaves) {
+    private void provokeNumericalInstability(IBayesInferrer inferrer, double minProb, int maxLeaves) {
         for (int i = 2; i < maxLeaves; i *= 1.5) {
             BayesNet testNet = buildSimpleTreeNetwork(i, minProb);
             if (inferrer instanceof JunctionTreeAlgorithm) {

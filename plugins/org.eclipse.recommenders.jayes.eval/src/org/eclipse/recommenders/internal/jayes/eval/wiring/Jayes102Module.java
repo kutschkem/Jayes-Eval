@@ -13,7 +13,7 @@ package org.eclipse.recommenders.internal.jayes.eval.wiring;
 import static org.eclipse.recommenders.eval.jayes.statistics.memory.JunctionTreeMemoryStatisticsProvider.SPECIFIER;
 
 import org.eclipse.recommenders.eval.jayes.util.JTATestAdapter;
-import org.eclipse.recommenders.jayes.inference.IBayesInferer;
+import org.eclipse.recommenders.jayes.inference.IBayesInferrer;
 import org.eclipse.recommenders.jayes.inference.junctionTree.JunctionTreeAlgorithm;
 
 import com.google.inject.AbstractModule;
@@ -24,7 +24,7 @@ public class Jayes102Module extends AbstractModule {
 
     @Override
     protected void configure() {
-        bind(IBayesInferer.class).to(JunctionTreeAlgorithm.class);
+        bind(IBayesInferrer.class).to(JunctionTreeAlgorithm.class);
         bind(JunctionTreeAlgorithm.class).to(JTATestAdapter.class);
         bind(JTATestAdapter.class).in(Scopes.SINGLETON); // important for IStatisticsProvider
         bind(String.class).annotatedWith(Names.named(SPECIFIER)).toInstance("Jayes_1.0.2");

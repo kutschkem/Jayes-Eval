@@ -33,7 +33,7 @@ public class Main {
             ioBenchMark.timeBinaryDeserializationWithMinDegreeToJTA(WARMUP_ITERATIONS);
 
             long time;
-            List deserialization;
+            List<?> deserialization;
             // ///////////////////////////
 
             time = System.nanoTime();
